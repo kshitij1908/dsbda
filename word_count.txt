@@ -1,0 +1,82 @@
+//Driver Class
+
+import java.io.IOException;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+
+public class myDriver {
+
+    public static void main(String[] args)
+            throws IOException, ClassNotFoundException, InterruptedException {
+    	
+        Configuration conf = new Configuration();
+
+        Job job = Job.getInstance(conf, "Word Count");
+        
+        job.setJarByClass(myDriver.class);
+        job.setMapperClass(myMapper.class);
+        job.setReducerClass(myReducer.class);
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(IntWritable.class);
+
+        FileInputFormat.addInputPath(job, new Path(args[0]));
+        FileOutputFormat.setOutputPath(job, new Path(args[1]));
+        
+        System.exit(job.waitForCompletion(true) ? 0 : 1);
+
+    }
+}
+
+//Mapper Class
+
+import java.io.IOException;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.mapreduce.Mapper;
+
+public class myMapper extends Mapper<LongWritable, Text, Text, IntWritable> {
+
+    public void map(LongWritable key, Text value, Context context)
+            throws IOException, InterruptedException {
+
+        // Convert line to lowercase
+        String line = value.toString().toLowerCase();
+
+        // Split using spaces, tabs, multiple spaces
+        String[] words = line.split("\\s+");
+        for (String word : words) {
+            if (word.trim().length() > 0) {
+                context.write(new Text(word), new IntWritable(1));
+
+            }
+
+        }
+
+    }
+
+}
+
+//Reducer Class
+
+import java.io.IOException;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.mapreduce.Reducer;
+
+public class myReducer extends Reducer<Text, IntWritable, Text, IntWritable> {
+    public void reduce(Text key, Iterable<IntWritable> values, Context context)
+            throws IOException, InterruptedException {
+
+        int sum = 0;
+        for (IntWritable val : values) {
+            sum += val.get();
+        }
+        context.write(key, new IntWritable(sum));
+    }
+}

@@ -1,0 +1,42 @@
+#WMapper.py
+
+#!/usr/bin/env python3
+import sys
+
+for line in sys.stdin:
+    # Remove leading/trailing whitespace and split on any whitespace
+    words = line.strip().split()
+   
+    for word in words:
+        # Emit each word with count 1
+        print(f"{word}\t1")
+
+#WReducer.py
+
+#!/usr/bin/env python3
+import sys
+
+current_word = None
+current_count = 0
+
+for line in sys.stdin:
+    line = line.strip()
+   
+    if not line:
+        continue
+
+    word, count = line.split("\t")
+    count = int(count)
+
+    if current_word == word:
+        current_count += count
+    else:
+        if current_word is not None:
+            print(f"{current_word}\t{current_count}")
+        current_word = word
+        current_count = count
+
+# Output the last word
+if current_word is not None:
+    print(f"{current_word}\t{current_count}")
+	
