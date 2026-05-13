@@ -39,4 +39,16 @@ for line in sys.stdin:
 # Output the last word
 if current_word is not None:
     print(f"{current_word}\t{current_count}")
-	
+
+
+hdfs dfs -mkdir /3095
+hdfs dfs -copyFromLocal /home/hduser/input.txt /3095
+hadoop jar /usr/local/hadoop/share/hadoop/tools/lib/hadoop-streaming-3.3.6.jar -input /3095/input.txt -output /output_final -mapper 'python3 PMapper.py' -reducer 'python 3 PReducer.py'
+
+hadoop jar /home/kshitijdixit/hadoop/share/hadoop/tools/lib/hadoop-streaming-3.3.6.jar \
+-input /3095/input.txt \
+-output /output_final \
+-mapper "python3 PMapper.py" \
+-reducer "python3 PReducer.py"
+
+hdfs dfs -cat /output_final/part-00000
