@@ -80,3 +80,7 @@ InterruptedException
 con.write(maxword, new IntWritable(maxcount));
 }
 }
+
+//hdfs dfs -put index.txt /wordcount
+//hadoop jar mapreduce1.jar mapreduce.WDriver /wordcount/index.txt /mapreduce_output/
+//hdfs dfs -cat /mapreduce_output/part-r-00000
