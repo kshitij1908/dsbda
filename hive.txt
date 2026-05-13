@@ -1,0 +1,112 @@
+-- Create Database
+CREATE DATABASE sum79;
+
+-- Use Database
+USE sum79;
+
+-- Create External Table
+CREATE EXTERNAL TABLE ext_flight(
+    year INT,
+    month INT,
+    day INT,
+    day_of_week INT,
+    dep_time INT,
+    crs_dep_time INT,
+    arr_time INT,
+    crs_arr_time INT,
+    unique_carrier STRING,
+    flight_num INT,
+    tail_num STRING,
+    actual_elapsed_time INT,
+    crs_elapsed_time INT,
+    air_time INT,
+    arr_delay INT,
+    dep_delay INT,
+    origin STRING,
+    dest STRING,
+    distance INT,
+    taxi_in INT,
+    taxi_out INT,
+    cancelled INT,
+    cancellation_code STRING,
+    diverted INT,
+    carrier_delay STRING,
+    weather_delay STRING,
+    nas_delay STRING,
+    security_delay STRING,
+    late_aircraft_delay STRING
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+LOCATION '/user/hive/warehouse/flight_ext/';
+
+-- Create Managed Table
+CREATE TABLE flight(
+    year INT,
+    month INT,
+    day INT,
+    day_of_week INT,
+    dep_time INT,
+    crs_dep_time INT,
+    arr_time INT,
+    crs_arr_time INT,
+    unique_carrier STRING,
+    flight_num INT,
+    tail_num STRING,
+    actual_elapsed_time INT,
+    crs_elapsed_time INT,
+    air_time INT,
+    arr_delay INT,
+    dep_delay INT,
+    origin STRING,
+    dest STRING,
+    distance INT,
+    taxi_in INT,
+    taxi_out INT,
+    cancelled INT,
+    cancellation_code STRING,
+    diverted INT,
+    carrier_delay STRING,
+    weather_delay STRING,
+    nas_delay STRING,
+    security_delay STRING,
+    late_aircraft_delay STRING
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ',';
+
+-- Load Data into Managed Table
+LOAD DATA LOCAL INPATH '/home/cloudera/Desktop/flight/flight_info.txt'
+INTO TABLE flight;
+
+-- Create HDFS Directory for External Table
+dfs -mkdir -p /user/hive/warehouse/flight_ext;
+
+-- Copy File to HDFS
+dfs -put /home/cloudera/Desktop/flight/flight_info.txt /user/hive/warehouse/flight_ext/;
+
+--create index
+CREATE INDEX idx
+ON TABLE flight(day)
+AS 'COMPACT'
+WITH DEFERRED REBUILD;
+
+--avg delay dept
+SELECT day_of_week,
+AVG(dep_delay)
+FROM flight
+GROUP BY day_of_week;
+
+--avg delay dept for year 2008
+SELECT day_of_week,
+AVG(dep_delay)
+FROM flight
+WHERE year = 2008
+GROUP BY day_of_week;
+
+--drop table
+DROP TABLE flight;
+
+DROP TABLE ext_flight;
+
+DROP DATABASE sum79;
