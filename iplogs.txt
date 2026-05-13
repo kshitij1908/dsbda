@@ -81,6 +81,16 @@ con.write(maxword, new IntWritable(maxcount));
 }
 }
 
+//Buid Path add external archives
+other location/Computer/usr/local/hadoop/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-3.3.6.jar
+                                                                hadoop-mapreduce-client-core-3.3.6.jar
+                                                                hadoop-mapreduce-client-common-3.3.6.jar
+
+other location/Computer/usr/local/hadoop/share/hadoop/hdfs/hadoop-hdfs-client-3.3.6.jar
+                                                           hadoop-hdfs-3.3.6.jar
+
+other location/Computer/usr/local/hadoop/share/hadoop/common/hadoop-common-3.3.6.jar
+
 //hdfs dfs -put index.txt /wordcount
 //hadoop jar mapreduce1.jar mapreduce.WDriver /wordcount/index.txt /mapreduce_output/
 //hdfs dfs -cat /mapreduce_output/part-r-00000
